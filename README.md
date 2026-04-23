@@ -1,105 +1,108 @@
 # Lane Detection with AI Scene Description
 
-This project combines traditional computer vision techniques with a local language model to perform lane detection on a road video and generate simple natural language descriptions of the scene.
+This project demonstrates a computer vision pipeline for detecting lane lines in driving videos and combines it with a locally running AI model to generate simple, human-readable descriptions of the road scene.
+
+The goal of this project is to explore how traditional image processing and modern language models can work together in a driving assistance context.
 
 Repository: [https://github.com/localopensource/detect_discuss.git](https://github.com/localopensource/detect_discuss.git)
 
 ## Demo
 
-Watch the project in action:
+A short demonstration of the project can be found here:
 
-## Features
+[https://youtu.be/SYUnABLPq8o](https://youtu.be/SYUnABLPq8o)
 
-* Detects lane lines using edge detection and Hough Transform
-* Applies a region of interest mask to focus on the road
-* Draws detected lane lines on video frames
-* Periodically generates a textual description of the driving scene
-* Integrates with a local AI model via HTTP (Ollama)
+## Overview
+
+The system processes a driving video frame by frame and detects lane markings using classical computer vision techniques. After detecting the lanes, it summarizes the road condition and sends this information to a local AI model (Ollama), which generates a natural language explanation of what is happening on the road.
+
+This creates a simple pipeline that connects visual perception with language understanding.
+
+## Key Features
+
+* Real-time lane detection using OpenCV
+* Edge detection and Hough Transform for line extraction
+* Region of interest filtering to focus on the road
+* Overlay of detected lane lines on video frames
+* AI-generated scene descriptions using a local Ollama model
+* Periodic analysis of video frames (every few seconds)
 
 ## Requirements
 
-* C++17 or newer
+To build and run this project, you will need:
+
+* C++17 or later
 * CMake 3.10 or higher
-* OpenCV
+* OpenCV library
 * libcurl
-* Ollama running locally
+* Ollama installed and running locally
 
-## Installation
+## Setup Instructions
 
-1. Clone the repository:
+Start by cloning the repository:
 
-   ```bash
-   git clone https://github.com/localopensource/detect_discuss.git
-   cd detect_discuss
-   ```
+git clone [https://github.com/localopensource/detect_discuss.git](https://github.com/localopensource/detect_discuss.git)
+cd detect_discuss
 
-2. Install dependencies:
+Make sure all dependencies are installed correctly. In particular, OpenCV and libcurl must be available in your system environment. Also ensure that Ollama is installed and running.
 
-   * OpenCV
-   * libcurl
-   * Ollama (make sure it is running on localhost:11434)
+## Build
 
-3. Build with CMake:
+Create a build directory and compile the project:
 
-   ```bash
-   mkdir build
-   cd build
-   cmake ..
-   make
-   ```
+mkdir build
+cd build
+cmake ..
+make
 
-## Usage
+## Run
 
-1. Start Ollama:
+Before running the application, start the local AI model:
 
-   ```bash
-   ollama run llama3.2
-   ```
+ollama run llama3.2
 
-2. Run the application:
+Then execute the program:
 
-   ```bash
-   ./lanedetection
-   ```
+./lanedetection
 
-3. A window will open showing the processed video with detected lane lines.
+A window will open showing lane detection results in real time.
 
-4. Every 30 frames, the program will print an AI-generated description of the road scene in the terminal.
+At regular intervals, the system will also print AI-generated descriptions of the current road scene in the terminal.
 
-## Video Input
+## Input Video
 
-The video path is currently hardcoded in the source file:
+The input video is currently defined in the source code as:
 
-```cpp
-cv::VideoCapture cap("C:\\Users\\WINDOWS\\projects\\Lane_Detection\\road.mp4");
-```
+cv::VideoCapture cap("C:\Users\WINDOWS\projects\Lane_Detection\road.mp4");
 
-You can change the URL or file path to any video you want to process. This can include:
+You can modify this path to use:
 
-* A local video file
-* Another driving dataset
-* A webcam or camera stream (if supported by OpenCV)
+* A different recorded driving video
+* Your own dataset
+* A webcam feed (if supported by OpenCV)
 
 ## How It Works
 
-1. The video is read frame by frame.
-2. Each frame is converted to grayscale and blurred.
-3. Edge detection is applied using the Canny algorithm.
-4. A polygonal region of interest isolates the road area.
-5. Hough Line Transform detects lane lines.
-6. Detected lines are drawn on the original frame.
-7. A simple rule-based function summarizes lane detection quality.
-8. The summary is sent to the local AI model via HTTP.
-9. The AI returns a natural language explanation of the scene.
+The pipeline follows these steps:
+
+1. The video is loaded frame by frame
+2. Each frame is converted to grayscale
+3. Gaussian blur is applied to reduce noise
+4. Canny edge detection identifies edges
+5. A region of interest isolates the road area
+6. Hough Line Transform detects lane markings
+7. Detected lines are drawn over the original frame
+8. A simple rule-based summary is generated
+9. The summary is sent to a local AI model via HTTP
+10. The AI returns a natural language explanation
 
 ## Project Structure
 
-* `detect.cpp` – Main source file containing lane detection and AI integration
-* `CMakeLists.txt` – Build configuration
+* detect.cpp – main implementation for lane detection and AI integration
+* CMakeLists.txt – build configuration
 
-## CMake Configuration
+## Build Configuration
 
-```cmake
 cmake_minimum_required(VERSION 3.10)
 project(lanedetection_ai)
 
@@ -111,25 +114,27 @@ find_package(CURL REQUIRED)
 add_executable(lanedetection detect.cpp)
 
 target_link_libraries(lanedetection
-    ${OpenCV_LIBS}
-    CURL::libcurl
+${OpenCV_LIBS}
+CURL::libcurl
 )
-```
 
 ## Notes
 
-* Ensure the Ollama server is running before executing the program.
-* The model used is `llama3.2:latest`, but you can modify it in the code.
-* Performance depends on your hardware and video resolution.
+* Ensure Ollama is running before executing the program
+* The model used is llama3.2:latest, but it can be changed easily in the code
+* Results depend on lighting conditions and video quality
 
-## Possible Improvements
+## Future Improvements
 
-* Add lane averaging and smoothing
-* Detect road curvature
-* Support real-time webcam input
-* Improve prompt engineering for better AI responses
-* Parse JSON responses instead of printing raw output
+This project can be extended in several ways:
+
+* More stable lane tracking across frames
+* Curved lane detection for complex roads
+* Real-time webcam or dashcam integration
+* Improved AI prompts for better contextual understanding
+* Structured output (JSON-based AI responses)
+* Performance optimization for real-time systems
 
 ## License
 
-This project is open-source and available under the MIT License.
+This project is released under the MIT License and is free to use and modify.
